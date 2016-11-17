@@ -56,15 +56,19 @@ def addVariables(m):
 def addConstraints(m):
 
 	# Add constraints
+
+	#If facility X_(j,c) is closed, then Y_(i,j) must be 0. Otherwise, Y_(i,j) must be 1 at most.
 	for i in range(numClients):
 		for j in range(numFacilities):
 			m.addConstr(y[(i,j)] <= quicksum(x[(j,c)] for c in range(numSizes)))
 
+	#For each client the sum of the supply from all facilities must be 1.
 	for i in range(numClients):
 		m.addConstr(quicksum(y[(i,j)] for j in range(numFacilities)) == 1)
 
+	#For each facility, only one size can be open
 	for i in range(numFacilities):
-		m.addConstr(quicksum(x[(i,j)] for j in range(numSizes)) == 1)
+		m.addConstr(quicksum(x[(i,j)] for j in range(numSizes)) <= 1)
 
 # This function is responsible for setting up the model and defining the objective
 # function of the model
@@ -73,6 +77,8 @@ def startModel(model):
 	addConstraints(model)
 	model.setObjective( quicksum(quicksum(facilitySizeCosts[i][j]*x[(i,j)] for i in range(numFacilities) for j in range(numSizes)) 
 		+ quicksum(alpha*d[(i,j)]*y[(i,j)] for i in range(numClients)) for j in range(numFacilities)) )
+	#Note: Is this objective fun even correct? Does it make sense to multiply y(i,j)*d(i,j) and regard that as the cost, wouldnt that
+	#just mean that you are traveling a fraction of the distance?
 
 #This function is responsible for setting up the model and invoking
 #the Gurobi Optimizer on it.
