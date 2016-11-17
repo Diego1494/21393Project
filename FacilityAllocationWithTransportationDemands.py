@@ -18,21 +18,21 @@ clientToClientDemands = [[0, 1, 3],
 						 [3, 6, 0]]
 
 #Element i indicates the (x,y) location of facility i
-facilities = [[0,0],[0,1],[0,1],
+facilities = [[0,0],[0,1],[0,1.5],
               [1,0],[1,1],[1,2],
               [2,0],[2,1],[2,2]]
 
 #Element (i,j) indicates the cost of opening a facility of
 #size j at location i
-facilitySizeCosts = [[3,2,3,1,3,3,4,3,2],
-					 [2,2,3,1,3,3,4,3,2],
-					 [3,2,3,1,3,3,4,3,2],
-					 [1,2,3,1,3,3,4,3,2],
-					 [3,2,3,1,3,3,4,3,2],
-					 [3,2,3,1,3,3,4,3,2],
-					 [4,2,3,1,3,3,4,3,2],
-					 [3,2,3,1,3,3,4,3,2],
-					 [2,2,3,1,3,3,4,3,2]]
+facilitySizeCosts = [[1,2,3,4,5,6,7,8,9],
+					 [1,2,3,4,5,6,7,8,9],
+					 [1,2,3,4,5,6,7,8,9],
+					 [1,2,3,4,5,6,7,8,9],
+					 [1,2,3,4,5,6,7,8,9],
+					 [1,2,3,4,5,6,7,8,9],
+					 [1,2,3,4,5,6,7,8,9],
+					 [1,2,3,4,5,6,7,8,9],
+					 [1,2,3,4,5,6,7,8,9]]
 
 numFacilities = len(facilities)
 numClients = len(clients)
@@ -96,9 +96,7 @@ def addConstraints(m):
 
 	#For each facility, it can not supply more than its capacity.
 	for k in range(numFacilities):
-		m.addConstr(quicksum(c * x[(k,c)] for c in range(numSizes)) >= 
-			quicksum(y[(i,j,k)] * clientToClientDemands[i][j] for i in range(numClients) for j in range(numClients)))
-
+		m.addConstr(quicksum(y[(i,j,k)] for i in range(numClients) for j in range(numClients)) <= 1)
 
 # This function is responsible for setting up the model and defining the objective
 # function of the model
@@ -108,11 +106,20 @@ def startModel(model):
 	model.setObjective( quicksum(facilitySizeCosts[i][j]*x[(i,j)] for i in range(numFacilities) for j in range(numSizes)) 
 	    + quicksum(alpha*d[(i,j,k)]*y[(i,j,k)]*x[(k, c)]*c for c in range(numSizes) for i in range(numClients) for j in range(numClients) for k in range(numFacilities)))
 
+def printResults(model):
+	vars = model.getVars()
+	for var in vars:
+		if (var.x != 0):
+			print(var.varName)
+			print(var.x)
+			print("\n")
+
 #This function is responsible for setting up the model and invoking
 #the Gurobi Optimizer on it.
 def optimizeModel():
 	m = Model()
 	startModel(m)
 	m.optimize()
+	printResults(m)
 
 optimizeModel()
