@@ -1,0 +1,49 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1504
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red255\green255\blue255;}
+{\*\expandedcolortbl;\csgray\c100000;\csgray\c0;\csgray\c100000;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 Working with Gurobi:\
+\
+\
+
+\b \ul BASICS:
+\b0 \ulnone \
+\
+To use Gurobi, open up Terminal in your computer.\
+\
+1. To open a Model using the Gurobi Command line, in Terminal type:\
+      gurobi_cl /path/to/Model\
+e.g. 
+\f1\fs22 \cf2 \cb3 \CocoaLigature0  gurobi_cl /Library/gurobi700/mac64/examples/data/coins.lp\
+
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+2. To open the Gurobi Shell, in Terminal type:\
+      gurobi.sh\
+\
+
+\b \ul SOLVING A MODEL:
+\b0 \ulnone \
+\
+Follow tutorial on Page 30.\
+1. Read the model: m = read(\'91path/to/file\'92)\
+2. Solve the model: m.optimize()\
+3. Inspect model attributes: m.printAttr()\
+\
+
+\b \ul Customizing Model Solving:\
+
+\b0 \ulnone \
+a. You can also set constraints on the variables and re optimize the solution with the added constraint. (pg. 32)\
+\
+b. Changing model parameters may improve runtime:\
+    1. You can do it manually.\
+    2. You can use: m.tune(). This function will try a bunch of different parameters and will output the   ones that improve the runtime. (pg.37)\
+\
+c. You can customize the behavior of the Gurobi optimizer by providing it with callback functions. (pg.40)\
+\
+d.\
+\
+}
