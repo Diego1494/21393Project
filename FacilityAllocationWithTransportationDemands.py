@@ -1,11 +1,6 @@
 from gurobipy import *
 import math
 
-#MISSING: 
-#Integrality constraint on y[(i,j,k)] * clientToClientDemands[i][j]. That is, a facility can not send 2.5 cars to satisfy
-#clientToClient demands.
-
-
 #This section is used to declare all of the model data as global variables
 
 #Element i indicates the (x,y) location of client i
@@ -51,6 +46,8 @@ def distance(a,b,c):
 	dx1 = a[0] - b[0]
 	dy1 = a[1] - b[1]
 	return math.sqrt(dx0*dx0 + dy0*dy0) + math.sqrt(dx1*dx1 + dy1*dy1)
+
+#START OF MODEL
 
 # This function is responsible for adding all the variables that will be used
 # by the model
