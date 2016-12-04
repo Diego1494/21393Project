@@ -1,6 +1,7 @@
 from gurobipy import *
 import math
 import numpy
+from random import randint
 
 #This section declares all model constant values
 
@@ -30,12 +31,12 @@ facilityCapacities = 20 #The number of different sizes a facility can have
 #Data structures to hold the model variables and constants
 x = {}; n = {}; f = {}; y = {}; w = {}; l = {}; d = {}
 alpha = 1 
-totalTime = 100 #Total number of time units
+totalTime = 20 #Total number of time units
 
 #Given the index of a capacity, returns the number of cars that that a facility of that
 #capacity can hold.
 def capacity(c):
-	return c
+	return 10*c
 
 #Calculates the distance of the path c -> a -> b
 def distance(a,b):
@@ -46,7 +47,7 @@ def distance(a,b):
 #Returns the demand of cars going from client i to client j at time t.
 def demand(i, j, t):
 	if (t == totalTime - 1): return 0
-	else: return 5
+	else: return randint(0, 170)
 
 #START MODEL
 
@@ -57,7 +58,7 @@ def addVariables(m):
 	#Variable X[k,c] binary variable which indicates if facility k of capacity c is open
 	for k in xrange(numFacilities):
 		for c in xrange(facilityCapacities):
-			x[(k, c)] = m.addVar(vtype=GRB.BINARY, name="x%d,%d" % (k, c))
+			x[(k, c)] = m.addVar(vtype=GRB.BINARY, name="X.%d,%d" % (k, c))
 
 	for c in xrange(facilityCapacities):
 		#Variable indicating the number of cars that a facility of capacity c can hold
@@ -70,12 +71,12 @@ def addVariables(m):
 	for t in xrange(totalTime):
 		for i in xrange(numClients):
 			for k in xrange(numFacilities):
-				#Variable Y_(i,k,t) continuous variable indicating number of cars that facility k sends to client i
+				#Variable Y_(i,k,t) variable indicating number of cars that facility k sends to client i
 				#at time t.
-				y[(i,k,t)] = m.addVar(lb=0, vtype=GRB.INTEGER, name="Y%d,%d,%d" % (i,k,t))
-				#Variable W_(i,k,t) continuous variable indicating number of cars that client i sends to facility k
+				y[(i,k,t)] = m.addVar(lb=0, vtype=GRB.INTEGER, name="Y.%d,%d,%d" % (i,k,t))
+				#Variable W_(i,k,t) variable indicating number of cars that client i sends to facility k
 				#at time t.
-				w[(i,k,t)] = m.addVar(lb=0, vtype=GRB.INTEGER, name="W%d,%d,%d" % (i,k,t))
+				w[(i,k,t)] = m.addVar(lb=0, vtype=GRB.INTEGER, name="W.%d,%d,%d" % (i,k,t))
 
 	for i in xrange(numClients):
 		for j in xrange(numClients):
@@ -99,7 +100,7 @@ def addConstraints(m):
 	def s(i, ti): return quicksum((y[(i,k,t)] - w[(i,k,t)]) for t in xrange(ti) for k in xrange(numFacilities)) + quicksum((l[(j, i, t)] - l[(i, j, t)]) for t in xrange(ti) for j in xrange(numClients))
 
 	#Number of clients at facility i start of time ti
-	def r(k, ti): return quicksum(n[c]*x[(k,c)] for c in xrange(facilityCapacities)) + quicksum((w[(i,k,t)] - y[(i,k,t)]) for t in xrange(ti) for k in xrange(numFacilities)) 
+	def r(k, ti): return quicksum(n[c]*x[(k,c)] for c in xrange(facilityCapacities)) + quicksum((w[(i,k,t)] - y[(i,k,t)]) for t in xrange(ti) for i in xrange(numClients)) 
 
 	# Add constraints
 
@@ -139,10 +140,14 @@ def startModel(model):
 def printResults(model):
 	vars = model.getVars()
 	for var in vars:
-		if (var.x != 0):
-			print(var.varName)
-			print(var.x)
-			print("\n")
+		if(var.x != 0): print(var.varName + " = %.1f" % var.x)
+		#print(" = ")
+		#print(var.x)
+		#print("\n")
+		# if (var.x != 0):
+		# 	print(var.varName)
+		# 	print(var.x)
+		# 	print("\n")
 
 #This function is responsible for setting up the model and invoking
 #the Gurobi Optimizer on it.
