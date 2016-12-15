@@ -74,7 +74,7 @@ def addConstraints(m):
 	# Add constraints
 
 	#NOTE: this constraint may not be necessary
-	#If facility k is closed, then Y_(i,j,k) must be 0. Otherwise, Y_(i,j,k) must be 1 at most.
+	#If facility k is closed, then Y_(i,j,k) must be 0 Otherwise, Y_(i,j,k) must be 1 at most.
 	for k in range(numFacilities):
 		for i in range(numClients):
 			for j in range(numClients):
